@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Report find Item</title>
+  <style>
+    /* 
+    @import url('https://fonts.googleapis.com/css2?family=Atma:wght@300;400;500;600;700&family=Oswald:wght@200..700&family=Poiret+One&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&family=Tomorrow:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap'); */
+    @import url('https://fonts.googleapis.com/css2?family=Text+Me+One&display=swap');
+    body {
+      font-family: 'Text Me One', sans-serif;
+      background-color: #000;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .form-container {
+      background-color: #fff;
+      color: #000;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 450px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 24px;
+      color: #000;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    input[type="text"],
+    textarea,
+    input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .image-preview {
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    .image-preview img {
+      max-width: 100%;
+      max-height: 150px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .submit-button,
+    .reset-button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .submit-button {
+      background-color: #000;
+      color: #fff;
+    }
+
+    .submit-button:hover {
+      background-color: #333;
+    }
+
+    .reset-button {
+      background-color: #ccc;
+      color: #000;
+    }
+
+    .reset-button:hover {
+      background-color: #bbb;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .loading-spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #000;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .error-message {
+      color: red;
+      font-size: 12px;
+      margin-top: 5px;
+      display: none;
+    }
+
+    @media (max-width: 480px) {
+      .form-container {
+        padding: 15px;
+      }
+
+      h1 {
+        font-size: 20px;
+      }
+
+      .button-group {
+        flex-direction: column;
+      }
+
+      .submit-button,
+      .reset-button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h1>Report Find Item</h1>
+    <form id="lostItemForm" onsubmit="return submitForm(event)">
+      <div class="form-group">
+        <label for="name">Your Name:</label>
+        <input type="text" id="name" name="name" placeholder="Enter your name" required>
+        <div class="error-message" id="nameError">Please enter your name.</div>
+      </div>
+      <div class="form-group">
+        <label for="itemName">Item Name:</label>
+        <input type="text" id="itemName" name="itemName" placeholder="Enter item name" required>
+        <div class="error-message" id="itemNameError">Please enter the item name.</div>
+      </div>
+      <div class="form-group">
+        <label for="itemDescription">Item Description:</label>
+        <textarea id="itemDescription" name="itemDescription" placeholder="Describe the item" rows="4" required></textarea>
+        <div class="error-message" id="itemDescriptionError">Please describe the item.</div>
+      </div>
+      <div class="form-group">
+        <label for="location">Location:</label>
+        <input type="text" id="location" name="location" placeholder="Enter location..." required>
+        <div class="error-message" id="locationError">Please enter the location.</div>
+      </div>
+      <div class="form-group">
+        <label for="image">Upload Image:</label>
+        <input type="file" id="image" name="image" accept="image/*" required onchange="previewImage(event)">
+        <div class="error-message" id="imageError">Please upload an image.</div>
+        <div class="image-preview" id="imagePreview">
+          <img id="preview" src="#" alt="Image Preview" style="display: none;">
+        </div>
+      </div>
+      <div class="button-group">
+        <button type="submit" class="submit-button">Submit</button>
+        <button type="button" class="reset-button" onclick="resetForm()">Reset</button>
+      </div>
+      <div class="loading" id="loading">
+        <div class="loading-spinner"></div>
+        <p>Submitting...</p>
+      </div>
+    </form>
+  </div>
+
+<script>
+  
+      window.onload = initAutocomplete;
+    function previewImage(event) {
+      const file = event.target.files[0];
+      const preview = document.getElementById('preview');
+      const imagePreview = document.getElementById('imagePreview');
+
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          preview.src = e.target.result;
+          preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      } else {
+        preview.src = '#';
+        preview.style.display = 'none';
+      }
+    }
+
+    function resetForm() {
+      document.getElementById('lostItemForm').reset();
+      document.getElementById('preview').style.display = 'none';
+      hideAllErrors();
+    }
+
+    function hideAllErrors() {
+      const errors = document.querySelectorAll('.error-message');
+      errors.forEach(error => error.style.display = 'none');
+    }
+
+    function validateForm() {
+      let isValid = true;
+      const name = document.getElementById('name').value.trim();
+      const itemName = document.getElementById('itemName').value.trim();
+      const itemDescription = document.getElementById('itemDescription').value.trim();
+      const location = document.getElementById('location').value.trim();
+      const image = document.getElementById('image').value;
+
+      if (!name) {
+        document.getElementById('nameError').style.display = 'block';
+        isValid = false;
+      }
+      if (!itemName) {
+        document.getElementById('itemNameError').style.display = 'block';
+        isValid = false;
+      }
+      if (!itemDescription) {
+        document.getElementById('itemDescriptionError').style.display = 'block';
+        isValid = false;
+      }
+      if (!location) {
+        document.getElementById('locationError').style.display = 'block';
+        isValid = false;
+      }
+      if (!image) {
+        document.getElementById('imageError').style.display = 'block';
+        isValid = false;
+      }
+
+      return isValid;
+    }
+
+    function submitForm(event) {
+      event.preventDefault();
+      if (validateForm()) {
+        document.getElementById('loading').style.display = 'block';
+        setTimeout(() => {
+          document.getElementById('loading').style.display = 'none';
+          alert('Form submitted successfully!');
+          resetForm();
+        }, 2000); 
+      }
+    }
+    
+  </script>
+</body>
+</html>
